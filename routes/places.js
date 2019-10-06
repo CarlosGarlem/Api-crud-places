@@ -48,6 +48,7 @@ router.put('/:id', (req, res, next) => {
         if(Object.keys(place).length > 0) {
             var index = data.indexOf(place)
             data[index] = body
+            data[index].id = place.id
             res.status(204)
         } else {
             res.status(404).send('Item not found!')
