@@ -2,9 +2,11 @@ var data = require('../../data/localStorage');
 
 const getAllPlaces = (req, res, next) => {  
     try{
-        res.status(200).json(data)
+        res.status(200)
+        res.json(data)
     } catch(error) {
-        res.status(404).send('No items found in data!')
+        res.status(404)
+        //res.send('No items found in data!')
     }
 }
   
@@ -13,12 +15,15 @@ const getOnePlace = (req, res, next) => {
         const { params } = req
         var place = data.find(item => item.id.toString() === params.id)
         if(Object.keys(place).length > 0) {
-            res.status(200).json(place)
+            res.status(200)
+            res.json(place)
         } else {
-            res.status(404).send('Item not found!')
+            res.status(404)
+            //res.send('Item not found!')
         }
     } catch(error) {
-        res.status(404).send('Item not found!')
+        res.status(404)
+        //res.send('Item not found!')
     }
 }
 
@@ -45,13 +50,16 @@ const createPlace = (req, res, next) => {
             body.id = nextId + 1
             body.rating = Number(body.rating.toFixed(2))
             data.push(body)
-            res.status(201).json(data)
+            res.status(201)
+            res.json(data)
         }
         else{
-            res.status(400).json("Check properties of object")
+            res.status(400)
+            res.json("Check properties of object")
         }
     } catch(error){
-        res.status(404).send('Error! Item not created')
+        res.status(404)
+        //res.send('Error! Item not created')
     }
 }
 
@@ -69,12 +77,15 @@ const updatePlace = (req, res, next) => {
                 }
             });
             data[index].id = place.id
-            res.status(204).end()
+            res.status(204)
+            res.end()
         } else {
-            res.status(404).send('Item not found!')
+            res.status(404)
+            //res.send('Item not found!')
         }
     } catch(error) {
-        res.status(404).send('Update fail!')
+        res.status(404)
+        //res.send('Update fail!')
     }
 }
 
@@ -88,12 +99,15 @@ const deletePlace = (req, res, next) => {
             var index = data.indexOf(place)
             console.log(index)
             data.splice(index, 1)
-            res.status(204).end()
+            res.status(204)
+            res.end()
         } else {
-            res.status(404).send('Item not found!')
+            res.status(404)
+            //res.send('Item not found!')
         }
     } catch(error) {
-        res.status(404).send('Delete fail!')
+        res.status(404)
+        //res.send('Delete fail!')
     }
 }
 
