@@ -1,17 +1,14 @@
-var express = require('express');
-var data = require('../data/localStorage');
-var router = express.Router();
+var data = require('../../data/localStorage');
 
-//READ ROUTES
-router.get('/', (req, res, next) => {  
+const getAllPlaces = (req, res, next) => {  
     try{
         res.status(200).json(data)
     } catch(error) {
         res.status(404).send('No items found in data!')
     }
-});
-
-router.get('/:id', (req, res, next) => {
+}
+  
+const getOnePlace = (req, res, next) => {
     try{
         const { params } = req
         var place = data.find(item => item.id.toString() === params.id)
@@ -23,10 +20,9 @@ router.get('/:id', (req, res, next) => {
     } catch(error) {
         res.status(404).send('Item not found!')
     }
-})
+}
 
-//CREATE ROUTE
-router.post('/', (req, res, next) => {
+const createPlace = (req, res, next) => {
     try{
         const {body} = req
         var keys = Object.keys(body)
@@ -57,10 +53,9 @@ router.post('/', (req, res, next) => {
     } catch(error){
         res.status(404).send('Error! Item not created')
     }
-})
+}
 
-//UPDATE ROUTE
-router.put('/:id', (req, res, next) => {
+const updatePlace = (req, res, next) => {
     try{
         const { params, body } = req
         var place = data.find(item => item.id.toString() === params.id)
@@ -81,10 +76,9 @@ router.put('/:id', (req, res, next) => {
     } catch(error) {
         res.status(404).send('Update fail!')
     }
-})
+}
 
-//DELETE ROUTE
-router.delete('/:id', (req, res, next) => {
+const deletePlace = (req, res, next) => {
     try {
         const { params } = req
         console.log(params)
@@ -101,6 +95,12 @@ router.delete('/:id', (req, res, next) => {
     } catch(error) {
         res.status(404).send('Delete fail!')
     }
-})
+}
 
-module.exports = router;
+module.exports = {
+    getAllPlaces,
+    getOnePlace,
+    createPlace,
+    updatePlace,
+    deletePlace
+}
