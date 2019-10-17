@@ -1,29 +1,21 @@
 var data = require('../../data/localStorage');
 
 const getAllPlaces = (req, res, next) => {  
-    try{
-        res.status(200)
-        res.json(data)
-    } catch(error) {
-        res.status(404)
-        //res.send('No items found in data!')
-    }
+    res.status(200)
+    res.json(data)
 }
   
 const getOnePlace = (req, res, next) => {
-    try{
-        const { params } = req
-        var place = data.find(item => item.id.toString() === params.id)
-        if(Object.keys(place).length > 0) {
-            res.status(200)
-            res.json(place)
-        } else {
-            res.status(404)
-            //res.send('Item not found!')
-        }
-    } catch(error) {
+    const { params } = req
+    var place = data.find(item => item.id.toString() === params.id)
+    if(typeof(place) === 'object') {
+        res.status(200)
+        res.json(place)
+    }
+    else
+    {
         res.status(404)
-        //res.send('Item not found!')
+        res.send('Item not found')
     }
 }
 
@@ -35,7 +27,6 @@ const createPlace = (req, res, next) => {
         if(keys.length == 5){
             var properties = ['country', 'rating', 'place', 'description', 'activity']
             keys.forEach(element => {
-                console.log(element)
                 if(!properties.includes(element)){
                     flag = false
                 }
@@ -44,7 +35,6 @@ const createPlace = (req, res, next) => {
             flag = false
         }
 
-        console.log(flag)
         if(flag){
             var nextId = Math.max.apply(Math, data.map(function(item) { return item.id; }));
             body.id = nextId + 1
@@ -53,15 +43,17 @@ const createPlace = (req, res, next) => {
             res.status(201)
             res.json(data)
         }
-        else{
+        else
+        {
             res.status(400)
-            res.json("Check properties of object")
+            res.send('Check properties of object sent')
         }
     } catch(error){
-        res.status(404)
-        //res.send('Error! Item not created')
+        res.status(400)
+        res.send('Missing params, item not created')
     }
 }
+
 
 const updatePlace = (req, res, next) => {
     try{
@@ -78,37 +70,27 @@ const updatePlace = (req, res, next) => {
             });
             data[index].id = place.id
             res.status(204)
-            res.end()
         } else {
-            res.status(404)
-            //res.send('Item not found!')
+            res.status(400)
+            res.send('Check body properties')
         }
     } catch(error) {
-        res.status(404)
-        //res.send('Update fail!')
+        res.status(400)
+        res.send('Missing body on request')
     }
 }
 
 const deletePlace = (req, res, next) => {
-    try {
         const { params } = req
-        console.log(params)
         var place = data.find(item => item.id.toString() === params.id)
-        console.log(place)
-        if(Object.keys(place).length > 0) {
+        if(typeof(place) === 'object') {
             var index = data.indexOf(place)
-            console.log(index)
             data.splice(index, 1)
             res.status(204)
-            res.end()
         } else {
             res.status(404)
-            //res.send('Item not found!')
+            res.send('Item not found')
         }
-    } catch(error) {
-        res.status(404)
-        //res.send('Delete fail!')
-    }
 }
 
 module.exports = {

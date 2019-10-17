@@ -1,5 +1,4 @@
 var express = require('express');
-//var data = require('../data/localStorage');
 const {getAllPlaces, getOnePlace, createPlace, updatePlace, deletePlace} = require('../managers/places')
 var router = express.Router();
 
