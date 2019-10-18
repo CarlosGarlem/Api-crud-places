@@ -1,22 +1,40 @@
 var data = require('../../data/localStorage');
+var destinationModel = require('../models/destination');
+
+
+const nextIndex = () =>{
+    destinationModel.findOne({}.sort(id,1), (err,doc) =>{
+        if(err) throw err;
+        console.log("pase")
+        var max = doc.id + 1;
+        return max
+    })
+}
 
 const getAllPlaces = (req, res, next) => {  
-    res.status(200)
-    res.json(data)
+    destinationModel.find({}, {_id:0, __v:0}, (err, docs) => {
+        if (err) throw err;
+        res.status(200)
+        res.json(docs)
+    });
 }
   
 const getOnePlace = (req, res, next) => {
     const { params } = req
-    var place = data.find(item => item.id.toString() === params.id)
-    if(typeof(place) === 'object') {
-        res.status(200)
-        res.json(place)
-    }
-    else
-    {
-        res.status(404)
-        res.send('Item not found')
-    }
+    place = destinationModel.find({ id: Number(params.id) }, { _id: 0, __v: 0 }, (err, doc) => {
+        if (err) throw err;
+        var place = doc
+
+        if(place.length > 0) {
+            res.status(200)
+            res.json(place)
+        }
+        else
+        {
+            res.status(404)
+            res.send('Item not found')
+        }
+    });
 }
 
 const createPlace = (req, res, next) => {
@@ -36,12 +54,22 @@ const createPlace = (req, res, next) => {
         }
 
         if(flag){
-            var nextId = Math.max.apply(Math, data.map(function(item) { return item.id; }));
-            body.id = nextId + 1
-            body.rating = Number(body.rating.toFixed(2))
-            data.push(body)
-            res.status(201)
-            res.json(data)
+            var nextId = nextIndex()
+            var newPlace = destinationModel({
+                id: nextId,
+                country: body.country,
+                rating: Number(body.rating.toFixed(2)),
+                place: body.place,
+                description: body.description,
+                activity: body.activity
+            });
+
+            newPlace.save((err) => {
+                if (err) throw err;
+                console.log('Place created!');
+                res.status(201)
+                res.json(data)
+            })
         }
         else
         {

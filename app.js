@@ -7,6 +7,8 @@ var logger = require('morgan');
 var indexRouter = require('./src/routes/index');
 var placesRouter = require('./src/routes/places')
 
+var db = require('./src/database/connection');
+
 var app = express();
 
 // view engine setup
@@ -20,7 +22,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/api/v1/places',placesRouter);
 
 // catch 404 and forward to error handler
