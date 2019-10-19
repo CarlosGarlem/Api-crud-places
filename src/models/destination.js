@@ -10,4 +10,11 @@ let destinationSchema= new mongoose.Schema({
     activity: String
 })
 
+destinationSchema.methods.lastIndex = function() {
+    // add some stuff to the users name
+    this.id = this.id + 1; 
+    return this.id;
+  };
+  
+
 module.exports = mongoose.model('destinations', destinationSchema)

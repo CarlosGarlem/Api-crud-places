@@ -2,7 +2,7 @@ require('mocha')
 const storage = require('../../data/localStorage')
 const sinon = require('sinon')
 const { expect } = require('chai')
-const  {getAllPlaces, getOnePlace, createPlace, updatePlace, deletePlace}  = require('../../src/managers/places')
+const  {getAllPlaces, getOnePlace, createPlace, nextIndex, insertItem, updatePlace, deletePlace}  = require('../../src/managers/places')
 
 describe("Places Manager", function() {
     let lista

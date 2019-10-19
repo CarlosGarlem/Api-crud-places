@@ -1,21 +1,12 @@
 var data = require('../../data/localStorage');
 var destinationModel = require('../models/destination');
 
-
-const nextIndex = () =>{
-    destinationModel.findOne({}.sort(id,1), (err,doc) =>{
-        if(err) throw err;
-        console.log("pase")
-        var max = doc.id + 1;
-        return max
-    })
-}
-
 const getAllPlaces = (req, res, next) => {  
     destinationModel.find({}, {_id:0, __v:0}, (err, docs) => {
-        if (err) throw err;
-        res.status(200)
-        res.json(docs)
+        if (!err) {
+            res.status(200)
+            res.json(docs)
+        }       
     });
 }
   
@@ -37,6 +28,41 @@ const getOnePlace = (req, res, next) => {
     });
 }
 
+const nextIndex = (body, res) => {
+    destinationModel.find({}, {_id: 0, id: 1}).sort({id:-1}).limit(1).exec((err, doc) => {
+        if(err) {
+            res.status(400)
+            res.send("Error")
+        } else {
+            var nextId = doc[0].id + 1
+            body.id = nextId
+            insertItem(body, res)
+        }
+    })
+}
+
+const insertItem = (body, res) => {
+    var newPlace = destinationModel({
+        id: body.id,
+        country: body.country,
+        rating: Number(body.rating.toFixed(2)),
+        place: body.place,
+        description: body.description,
+        activity: body.activity
+    });
+
+    newPlace.save((err) => {
+        if(err) {
+            res.status(400)
+            res.send("Error")
+        } else {
+            res.status(201)
+            res.send('Place created')
+        }
+    })
+}
+
+
 const createPlace = (req, res, next) => {
     try{
         const {body} = req
@@ -54,22 +80,7 @@ const createPlace = (req, res, next) => {
         }
 
         if(flag){
-            var nextId = nextIndex()
-            var newPlace = destinationModel({
-                id: nextId,
-                country: body.country,
-                rating: Number(body.rating.toFixed(2)),
-                place: body.place,
-                description: body.description,
-                activity: body.activity
-            });
-
-            newPlace.save((err) => {
-                if (err) throw err;
-                console.log('Place created!');
-                res.status(201)
-                res.json(data)
-            })
+            nextIndex(body, res) 
         }
         else
         {
@@ -82,22 +93,36 @@ const createPlace = (req, res, next) => {
     }
 }
 
-
 const updatePlace = (req, res, next) => {
     try{
         const { params, body } = req
-        var place = data.find(item => item.id.toString() === params.id)
         var keys = Object.keys(body)
-        var properties = ['country', 'rating', 'place', 'description', 'activity']
-        if(keys.length > 0) {
-            var index = data.indexOf(place)
+        var flag = true
+        if(keys.length == 5){
+            var properties = ['country', 'rating', 'place', 'description', 'activity']
             keys.forEach(element => {
-                if(properties.includes(element)){
-                    data[index][element] = body[element]
+                if(!properties.includes(element)){
+                    flag = false
+                }
+            })
+        } else {
+            flag = false
+        }
+
+        if(flag){
+            var query = destinationModel.update({ id: Number(params.id) }, 
+                { country: body.country, rating: body.rating, place: body.rating, description: body.description, activity: body.activity })
+            query.then(function (result) {
+                //{ n: 1, nModified: 1, ok: 1 }
+                if(result.ok === 1 && result.nModified > 0){
+                    res.status(204)
+                    res.send('Updated')
+                }
+                else {
+                    res.status(404)
+                    res.send('Item not found')
                 }
             });
-            data[index].id = place.id
-            res.status(204)
         } else {
             res.status(400)
             res.send('Check body properties')
@@ -108,23 +133,61 @@ const updatePlace = (req, res, next) => {
     }
 }
 
-const deletePlace = (req, res, next) => {
-        const { params } = req
-        var place = data.find(item => item.id.toString() === params.id)
-        if(typeof(place) === 'object') {
-            var index = data.indexOf(place)
-            data.splice(index, 1)
-            res.status(204)
+/*const updatePlace2 = (req, res, next) => {
+    try{
+        const { params, body } = req
+        var keys = Object.keys(body)
+        var flag = true
+        if(keys.length == 5){
+            var properties = ['country', 'rating', 'place', 'description', 'activity']
+            keys.forEach(element => {
+                if(!properties.includes(element)){
+                    flag = false
+                }
+            })
         } else {
+            flag = false
+        }
+
+        if(flag){
+            destinationModel.updateOne({ id: Number(params.id) }, 
+            { country: body.country, rating: body.rating, place: body.rating, description: body.description, activity: body.activity }, 
+            (err) => {
+                if (err) throw err;
+                res.status(204)
+                res.send('Updated')
+              });
+        } else {
+            res.status(400)
+            res.send('Check body properties')
+        }
+    } catch(error) {
+        res.status(400)
+        res.send('Missing body on request')
+    }
+}*/
+
+const deletePlace = (req, res, next) => {
+    const { params } = req
+    var query = destinationModel.deleteOne({ id: Number(params.id) }) 
+    query.then(function (result) {
+        if(result.ok === 1 && result.deletedCount > 0){
+            res.status(204)
+            res.send('Item deleted')
+        }
+        else {
             res.status(404)
             res.send('Item not found')
         }
+    });
 }
 
 module.exports = {
     getAllPlaces,
     getOnePlace,
     createPlace,
+    nextIndex,
+    insertItem,
     updatePlace,
     deletePlace
 }
