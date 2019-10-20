@@ -13,18 +13,24 @@ const getAllPlaces = (req, res, next) => {
 const getOnePlace = (req, res, next) => {
     const { params } = req
     place = destinationModel.find({ id: Number(params.id) }, { _id: 0, __v: 0 }, (err, doc) => {
-        if (err) throw err;
-        var place = doc
-
-        if(place.length > 0) {
-            res.status(200)
-            res.json(place)
+        if (!err) {
+            var place = doc
+            if(place.length > 0) {
+                res.status(200)
+                res.json(place)
+            }
+            else
+            {
+                res.status(404)
+                res.send('Item not found')
+            }
         }
-        else
-        {
+        else{
             res.status(404)
             res.send('Item not found')
         }
+
+       
     });
 }
 
