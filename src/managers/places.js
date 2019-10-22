@@ -139,39 +139,6 @@ const updatePlace = (req, res, next) => {
     }
 }
 
-/*const updatePlace2 = (req, res, next) => {
-    try{
-        const { params, body } = req
-        var keys = Object.keys(body)
-        var flag = true
-        if(keys.length == 5){
-            var properties = ['country', 'rating', 'place', 'description', 'activity']
-            keys.forEach(element => {
-                if(!properties.includes(element)){
-                    flag = false
-                }
-            })
-        } else {
-            flag = false
-        }
-
-        if(flag){
-            destinationModel.updateOne({ id: Number(params.id) }, 
-            { country: body.country, rating: body.rating, place: body.rating, description: body.description, activity: body.activity }, 
-            (err) => {
-                if (err) throw err;
-                res.status(204)
-                res.send('Updated')
-              });
-        } else {
-            res.status(400)
-            res.send('Check body properties')
-        }
-    } catch(error) {
-        res.status(400)
-        res.send('Missing body on request')
-    }
-}*/
 
 const deletePlace = (req, res, next) => {
     const { params } = req

@@ -1,16 +1,17 @@
 require('mocha')
-const storage = require('../../data/localStorage')
 const sinon = require('sinon')
 const { expect } = require('chai')
-const  {getAllPlaces, getOnePlace, createPlace, nextIndex, insertItem, updatePlace, deletePlace}  = require('../../src/managers/places')
+const server = 'http://localhost:3000'
+const storage = require('../../data/localStorage')
+const  {getAllPlaces, getOnePlace, createPlace,  updatePlace, deletePlace}  = require('../../src/managers/places')
 
 describe("Places Manager", function() {
     let lista
     beforeEach(() => {
-      lista = storage
+      lista = storage 
     })
 
-    it('will get all the places', () => {
+    it('will get all the places', async () => {
         const sandbox = sinon.createSandbox()
         const statusMock = sandbox.stub()
         const jsonMock = sandbox.stub()
@@ -23,14 +24,21 @@ describe("Places Manager", function() {
           json: jsonMock,
           send: sendMock
         }
-    
-        getAllPlaces(reqMock, resMock, nextMock)
-        sinon.assert.calledWith(statusMock, 200)
-        sinon.assert.calledWith(jsonMock, lista)
-      })
+
+        await getAllPlaces(reqMock, resMock, nextMock)//await fetch(server + '/api/v1/places')
+        var mystatus = await resMock.status
+        expect(mystatus).to.be.equal(200)
+        //await getAllPlaces(reqMock, resMock, nextMock)
+        //sinon.assert.calledWith(response.status, 200)
+        var myjson = await response.json
+        expect(myjson).to.be.equal(lista)
+        //sinon.assert.calledWith(myjson, lista)
 
 
-    it('will get one place with a correct id input', () => {
+    })
+
+
+   /* it('will get one place with a correct id input', () => {
         const sandbox = sinon.createSandbox()
         const statusMock = sandbox.stub()
         const jsonMock = sandbox.stub()
@@ -381,5 +389,5 @@ describe("Places Manager", function() {
       sinon.assert.calledWith(statusMock, 404)
       sinon.assert.calledWith(sendMock, 'Item not found')
       //sinon.assert.calledWith(jsonMock, lista)
-    })
+    })*/
 });

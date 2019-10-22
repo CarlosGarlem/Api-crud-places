@@ -8,7 +8,6 @@ var indexRouter = require('./src/routes/index');
 var placesRouter = require('./src/routes/places')
 
 var db = require('./src/database/connection');
-
 var app = express();
 
 // view engine setup
