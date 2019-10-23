@@ -1,16 +1,14 @@
 var data = require('../../data/localStorage');
 var destinationModel = require('../models/destination');
 
-const getAllPlaces = (req, res, next) => {  
+const getAllPlaces = async (req, res, next) => {  
     destinationModel.find({}, {_id:0, __v:0}, (err, docs) => {
-        if (!err) {
-            res.status(200)
-            res.json(docs)
-        }       
+        res.status(200)
+        res.json(docs)    
     });
 }
   
-const getOnePlace = (req, res, next) => {
+const getOnePlace = async(req, res, next) => {
     const { params } = req
     place = destinationModel.find({ id: Number(params.id) }, { _id: 0, __v: 0 }, (err, doc) => {
         if (!err) {
@@ -26,24 +24,22 @@ const getOnePlace = (req, res, next) => {
             }
         }
         else{
-            res.status(404)
-            res.send('Item not found')
+            res.status(400)
+            res.send('Bad request id')
         }
-
-       
     });
 }
 
 const nextIndex = (body, res) => {
     destinationModel.find({}, {_id: 0, id: 1}).sort({id:-1}).limit(1).exec((err, doc) => {
-        if(err) {
-            res.status(400)
-            res.send("Error")
-        } else {
+        //if(!err) {
             var nextId = doc[0].id + 1
             body.id = nextId
             insertItem(body, res)
-        }
+        //} else {
+           // res.status(400)
+           // res.send("Error")
+        //}
     })
 }
 
@@ -58,18 +54,17 @@ const insertItem = (body, res) => {
     });
 
     newPlace.save((err) => {
-        if(err) {
-            res.status(400)
-            res.send("Error")
-        } else {
+        //if(!err) {
             res.status(201)
             res.send('Place created')
-        }
+        //} else {
+           // res.status(400)
+            //res.send("Error")
+        //}
     })
 }
 
-
-const createPlace = (req, res, next) => {
+const createPlace = async(req, res, next) => {
     try{
         const {body} = req
         var keys = Object.keys(body)
@@ -99,7 +94,7 @@ const createPlace = (req, res, next) => {
     }
 }
 
-const updatePlace = (req, res, next) => {
+const updatePlace = async(req, res, next) => {
     try{
         const { params, body } = req
         var keys = Object.keys(body)
@@ -116,11 +111,11 @@ const updatePlace = (req, res, next) => {
         }
 
         if(flag){
-            var query = destinationModel.update({ id: Number(params.id) }, 
-                { country: body.country, rating: body.rating, place: body.rating, description: body.description, activity: body.activity })
+            var query = destinationModel.updateOne({ id: Number(params.id) }, 
+                { country: body.country, rating: body.rating, place: body.place, description: body.description, activity: body.activity })
             query.then(function (result) {
                 //{ n: 1, nModified: 1, ok: 1 }
-                if(result.ok === 1 && result.nModified > 0){
+                if(result.ok === 1 && result.n > 0){
                     res.status(204)
                     res.send('Updated')
                 }
@@ -139,8 +134,7 @@ const updatePlace = (req, res, next) => {
     }
 }
 
-
-const deletePlace = (req, res, next) => {
+const deletePlace = async(req, res, next) => {
     const { params } = req
     var query = destinationModel.deleteOne({ id: Number(params.id) }) 
     query.then(function (result) {
@@ -159,8 +153,6 @@ module.exports = {
     getAllPlaces,
     getOnePlace,
     createPlace,
-    nextIndex,
-    insertItem,
     updatePlace,
     deletePlace
 }
