@@ -191,7 +191,7 @@ describe("Places Manager", function() {
       send: sendMock
     }
 
-    await destinationModel.deleteMany({__v:0}).then( async() => {
+    await destinationModel.deleteMany({}).then( async() => {
       await createPlace(reqMock, resMock, nextMock).then( ()=>{
         sinon.assert.calledWith(statusMock, 201)
         sinon.assert.calledWith(sendMock, 'Place created')
