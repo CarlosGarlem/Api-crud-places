@@ -71,7 +71,7 @@ describe("Places Manager", function() {
 
       await getOnePlace(reqMock, resMock, nextMock).then( ()=>{
         sinon.assert.calledWith(statusMock, 200)
-      sinon.assert.calledWith(jsonMock, lista[0]) //index = 0 --> id = 1
+        sinon.assert.calledWith(jsonMock, lista[0]) //index = 0 --> id = 1
       }).catch(() => {})
 
   })
@@ -167,6 +167,39 @@ describe("Places Manager", function() {
     }).catch(() => {})
 
   })
+
+  it('will create a place, even if the db is empty', async() => {
+    const sandbox = sinon.createSandbox()
+    const statusMock = sandbox.stub()
+    const jsonMock = sandbox.stub()
+    const nextMock = sandbox.stub()
+    const sendMock = sandbox.stub()
+
+    const reqMock = {
+        body: {
+          "country": "Belice",
+          "rating": 4.1,
+          "place": "Cayos de Belice",
+          "description": "Islands",
+          "activity": "snorkling"
+        }
+    }
+
+    const resMock = {
+      status: statusMock,
+      json: jsonMock,
+      send: sendMock
+    }
+
+    await destinationModel.deleteMany({__v:0}).then( async() => {
+      await createPlace(reqMock, resMock, nextMock).then( ()=>{
+        sinon.assert.calledWith(statusMock, 201)
+        sinon.assert.calledWith(sendMock, 'Place created')
+      }).catch(() => {})
+    }).catch(() => {})
+   
+  })
+  
   
 
   it('won\'t create a place, less input properties', async() => {
@@ -245,30 +278,6 @@ describe("Places Manager", function() {
     }).catch(() => {})
     
   })
-
-  /*it('won\'t create a place, wrong input properties insert item method', () => {
-    const sandbox = sinon.createSandbox()
-    const statusMock = sandbox.stub()
-    const sendMock = sandbox.stub()
-
-    const bodyMock = {
-      "country": "Belice",
-      "rating": 4.1,
-      "place": "Cayos de Belice",
-      "description": "Islands"
-    }
-
-    const resMock = {
-      status: statusMock,
-      send: sendMock
-    }
-
-    insertItem(bodyMock, resMock)
-    sinon.assert.calledWith(statusMock, 400)
-    sinon.assert.calledWith(sendMock, 'Error')
-
-  })*/
-
     
   it('will update a place', async() => {
     const sandbox = sinon.createSandbox()

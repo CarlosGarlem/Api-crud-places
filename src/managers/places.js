@@ -32,14 +32,15 @@ const getOnePlace = async(req, res, next) => {
 
 const nextIndex = (body, res) => {
     destinationModel.find({}, {_id: 0, id: 1}).sort({id:-1}).limit(1).exec((err, doc) => {
-        //if(!err) {
+        if(doc.length > 0) {
             var nextId = doc[0].id + 1
             body.id = nextId
             insertItem(body, res)
-        //} else {
-           // res.status(400)
-           // res.send("Error")
-        //}
+        } else {
+            var nextId = 1
+            body.id = nextId
+            insertItem(body, res)
+        }
     })
 }
 
