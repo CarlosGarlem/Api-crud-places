@@ -2,7 +2,7 @@ var data = require('../../data/localStorage');
 var destinationModel = require('../models/destination');
 
 var redis = require('redis');
-var client = redis.createClient({host : 'localhost', port : 6379});
+var client = redis.createClient({host : 'localhost', port : 6379})
 client.on('ready',function() {
     console.log("Redis is ready");
 });
@@ -39,7 +39,7 @@ const getOnePlace = async(req, res, next) => {
                 if (!err) {
                     var place = doc
                     if(place.length > 0) {
-                        console.log("set")
+                        console.log("set1")
                         client.set(key, JSON.stringify(place))
                         client.expire(key, 180);
                         res.status(200)
@@ -57,7 +57,7 @@ const getOnePlace = async(req, res, next) => {
                 }
             });
         } else {
-            console.log("get")
+            console.log("get1")
             client.get(key, function(err, place) {
                 res.status(200)
                 res.json(JSON.parse(place))
@@ -93,7 +93,7 @@ const insertItem = (body, res) => {
     newPlace.save((err) => {
         //if(!err) {
             res.status(201)
-            res.send('Place created')
+            //res.send('Place created')
         //} else {
            // res.status(400)
             //res.send("Error")

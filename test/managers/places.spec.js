@@ -2,12 +2,22 @@ require('mocha')
 const sinon = require('sinon')
 const { expect } = require('chai')
 const  {getAllPlaces, getOnePlace, createPlace, updatePlace, deletePlace}  = require('../../src/managers/places')
+
 const mongoose = require('mongoose');
 const storage = require('../../data/localStorage')
 var destinationModel = require('../../src/models/destination');
 
+var proxyquire = require('proxyquire')
+let redisStub = {}
+let clientStub = {}
+let dictionary = {
+  "get_place_all" : JSON.stringify(storage),
+  "get_place_1": JSON.stringify(storage[0])
+}
+
 describe("Places Manager", function() {
   
+  let placeController
   let lista
   before((done)=>{
     mongoose.connect('mongodb://localhost:27017/DB_Trips', {
@@ -17,6 +27,42 @@ describe("Places Manager", function() {
       console.log("DB connection success")
       done()
     }).catch(err => {})
+
+    clientStub = {
+      on: (text, callback) => {
+        callback = () => {
+          console.log("stub works and redis too")
+        }
+      },
+      exists: (key, callback) => {
+        callback = (err, reply) => {
+          console.log((key in dictionary))
+          return (key in dictionary) ? 1 : 0 
+        }
+      },
+      set: (key, obj) => {
+        console.log(obj)
+        dictionary[key] = obj
+        console.log(dictionary)
+        return null
+      },
+      expire: (key, time) => {
+        console.log("hi im expire")
+        return null
+      },
+      get: (key, callback) => {
+        callback(null, () => {
+          console.logd(ictionary[key])
+          return dictionary[key]
+        })
+      }
+    }
+
+    redisStub = { 
+      createClient: (obj) => { 
+        return clientStub
+      }
+    }
   })
   
   beforeEach(async() => {
@@ -28,7 +74,7 @@ describe("Places Manager", function() {
     await destinationModel.collection.drop()
   })
 
-  it('will get all the places', async () => {
+  it('will get all the places with cache', async () => {
       const sandbox = sinon.createSandbox()
       const statusMock = sandbox.stub()
       const jsonMock = sandbox.stub()
@@ -42,12 +88,38 @@ describe("Places Manager", function() {
         send: sendMock
       }
 
-      await getAllPlaces(reqMock, resMock, nextMock).then( () =>{
+      placeController = proxyquire('../../src/managers/places.js', {
+        'redis': redisStub
+      })
+
+      await placeController.getAllPlaces(reqMock, resMock, nextMock).then( () =>{
         sinon.assert.calledWith(statusMock, 200) 
         sinon.assert.calledWith(jsonMock, lista)
-      }).catch(() => {})
+      })//.catch(() => {})
 
   })
+
+  /*it('will get all the places', async () => {
+    const sandbox = sinon.createSandbox()
+    const statusMock = sandbox.stub()
+    const jsonMock = sandbox.stub()
+    const reqMock = sandbox.stub()
+    const nextMock = sandbox.stub()
+    const sendMock = sandbox.stub()
+
+    const resMock = {
+      status: statusMock,
+      json: jsonMock,
+      send: sendMock
+    }
+
+    await getAllPlaces(reqMock, resMock, nextMock).then( () =>{
+      sinon.assert.calledWith(statusMock, 200) 
+      sinon.assert.calledWith(jsonMock, lista)
+    }).catch(() => {})
+
+})*/
+
 
 
   it('will get one place with a correct id input', async () => {
@@ -163,7 +235,7 @@ describe("Places Manager", function() {
 
     await createPlace(reqMock, resMock, nextMock).then( ()=>{
       sinon.assert.calledWith(statusMock, 201)
-      sinon.assert.calledWith(sendMock, 'Place created')
+      //sinon.assert.calledWith(sendMock, 'Place created')
     }).catch(() => {})
 
   })
