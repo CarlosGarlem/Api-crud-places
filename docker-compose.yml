@@ -1,0 +1,33 @@
+version: '2'
+
+networks:
+  places-net:
+    driver: bridge
+
+services:
+  mongodb:
+    image: 'mongo:latest'
+    networks:
+      - places-net
+  redisdb:
+    image: 'redis:latest'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - places-net
+  place-api:
+    image: carlosgl/places-api:v1
+    ports:
+      - 3000:3000
+    depends_on:
+      - mongodb
+      - redisdb
+    networks:
+      - places-net
+  place-site:
+    image: carlosgl/places-site:v1
+    ports:
+      - 8000:4200
+    networks:
+      - places-net
+
