@@ -2,7 +2,7 @@ var data = require('../../data/localStorage');
 var destinationModel = require('../models/destination');
 
 var redis = require('redis');
-var client = redis.createClient({host : 'localhost', port : 6379})
+var client = redis.createClient({host : 'redisdb', port : 6379})
 client.on('ready',function() {
     console.log("Redis is ready");
 });
@@ -91,13 +91,8 @@ const insertItem = (body, res) => {
     });
 
     newPlace.save((err) => {
-        //if(!err) {
-            res.status(201)
-            //res.send('Place created')
-        //} else {
-           // res.status(400)
-            //res.send("Error")
-        //}
+        res.status(201)
+        res.end()
     })
 }
 

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const server = 'localhost:27017'; // REPLACE WITH YOUR DB SERVER
+const server = 'mongodb:27017'; // REPLACE WITH YOUR DB SERVER
 const database = 'DB_Trips';      // REPLACE WITH YOUR DB NAME
 
 class Database {
