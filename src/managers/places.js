@@ -15,7 +15,7 @@ const getAllPlaces = async (req, res, next) => {
                 console.log("set")
                 var obj = JSON.stringify(docs)
                 client.set(key, obj);
-                client.expire(key, 180);
+                client.expire(key, 120);
                 res.status(200)
                 res.json(docs)    
             });
@@ -41,7 +41,7 @@ const getOnePlace = async(req, res, next) => {
                     if(place.length > 0) {
                         console.log("set1")
                         client.set(key, JSON.stringify(place))
-                        client.expire(key, 180);
+                        client.expire(key, 120);
                         res.status(200)
                         res.json(place)
                     }
