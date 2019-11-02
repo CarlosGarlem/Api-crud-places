@@ -1,0 +1,91 @@
+//////INSTALAR DOCKER
+https://www.digitalocean.com/community/tutorials/como-instalar-y-usar-docker-en-ubuntu-18-04-1-es
+
+//////IMAGENES
+docker pull mongo
+docker pull redis
+
+//////COMANDOS
+docker ps [-a] 
+docker rmi [Image ID]
+docker rm [container name/id]
+docker stop [container name/id]
+
+//BUILD IMG
+docker build -t <your username>/<your app name>:[tag] .
+docker build -t carlosgl/places-api:v1 .
+
+//UPLOAD IMAGE TO DOCKERHUB
+docker login -u <dockerhub username>
+docker login -u carlosgl
+
+docker push <dockerhub username>/<app name>:[tag]
+doccker push carlosgl/places-api:v1
+
+//CONTAINER COMMANDS
+docker run -d -p [local port]:[private container port (exposed)] --name [your app name] --network [network name] <your username>/<your app name>:[tag] 
+docker run -d -p 3000:3000 --name place-api --network places-net carlosgl/places-api:v1 
+
+//NETWORK COMMANDS
+docker network create [network name] --driver bridge
+docker network create places-net --driver bridge
+
+docker network ls
+
+//REDIS
+docker run -d --name <your redis app name> -e ALLOW_EMPTY_PASSWORD=yes --network [network name] redis:latest
+docker run -d --name redisdb -e ALLOW_EMPTY_PASSWORD=yes --network places-net redis:latest
+
+//MONGODB
+ docker run -d --name <your mongo app name> --network [network name] mongo:latest
+ docker run -d --name mongodb --network places-net mongo:latest
+
+//ANGULAR
+docker build -t carlosgl/places-site:v1 .
+docker run -d -p 8000:4200 --name place-site --network places-net carlosgl/places-site:v1 
+
+***CAMBIOS EN ARCHIVO package.json ng serve
+
+
+
+
+
+//DOCKER COMPOSE
+https://docs.docker.com/compose/install/
+
+//COMMANDS
+docker-compose up
+
+//SCRIPT
+version: '2'
+
+networks:
+  places-net:
+    driver: bridge
+
+services:
+  mongodb:
+    image: 'mongo:latest'
+    networks:
+      - places-net
+  redisdb:
+    image: 'redis:latest'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - places-net
+  place-api:
+    image: carlosgl/places-api:v1
+    ports:
+      - 3000:3000
+    depends_on:
+      - mongodb
+      - redisdb
+    networks:
+      - places-net
+  place-site:
+    image: carlosgl/places-site:v1
+    ports:
+      - 8000:4200
+    networks:
+      - places-net
