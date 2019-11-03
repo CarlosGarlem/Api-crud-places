@@ -168,9 +168,17 @@ const updatePlace = async(req, res, next) => {
 
 const deletePlace = async(req, res, next) => {
     const { params } = req
+    let key = 'get_place_all'
     var query = destinationModel.deleteOne({ id: Number(params.id) }) 
     query.then(function (result) {
         if(result.ok === 1 && result.deletedCount > 0){
+            client.exists(key, function(err, reply) { 
+                if (reply === 1) {
+                    client.del(key,function(err, place) {
+                        console.log("Key places_all deleted from cache")
+                    });
+                }
+            });
             res.status(204)
             res.send('Item deleted')
         }
