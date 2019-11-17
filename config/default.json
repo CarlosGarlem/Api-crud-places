@@ -1,0 +1,15 @@
+{
+    "Mongo": {
+        "dbConfig": {
+            "host": "mongodb",
+            "port": 27017,
+            "db": "DB_Trips"
+        }
+    },
+    "Redis": {
+        "dbConfig": {
+            "host": "redisdb",
+            "port": 6379
+        }
+    }
+}

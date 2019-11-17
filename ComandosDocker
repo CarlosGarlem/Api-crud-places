@@ -20,7 +20,7 @@ docker login -u <dockerhub username>
 docker login -u carlosgl
 
 docker push <dockerhub username>/<app name>:[tag]
-doccker push carlosgl/places-api:v1
+docker push carlosgl/places-api:v1
 
 //CONTAINER COMMANDS
 docker run -d -p [local port]:[private container port (exposed)] --name [your app name] --network [network name] <your username>/<your app name>:[tag] 
@@ -43,6 +43,7 @@ docker run -d --name redisdb -e ALLOW_EMPTY_PASSWORD=yes --network places-net re
 //ANGULAR
 docker build -t carlosgl/places-site:v1 .
 docker run -d -p 8000:4200 --name place-site --network places-net carlosgl/places-site:v1 
+docker push carlosgl/places-site:v1
 
 ***CAMBIOS EN ARCHIVO package.json ng serve
 

@@ -1,0 +1,15 @@
+{
+    "Mongo": {
+        "dbConfig": {
+            "host": "mongoplaces.eastus.azurecontainer.io",
+            "port": 27017,
+            "db": "DB_Trips"
+        }
+    },
+    "Redis": {
+        "dbConfig": {
+            "host": "redisplaces.eastus.azurecontainer.io",
+            "port": 6379
+        }
+    }
+}

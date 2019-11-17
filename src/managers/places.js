@@ -2,7 +2,7 @@ var data = require('../../data/localStorage');
 var destinationModel = require('../models/destination');
 
 var redis = require('redis');
-var client = redis.createClient({host : 'redisdb', port : 6379})
+var client = redis.createClient({host : 'redisplaces.eastus.azurecontainer.io', port : 6379})
 client.on('ready',function() {
     console.log("Redis is ready");
 });

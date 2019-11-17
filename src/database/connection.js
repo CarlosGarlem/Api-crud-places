@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const server = 'mongodb:27017'; // REPLACE WITH YOUR DB SERVER
+const server = 'mongoplaces.eastus.azurecontainer.io:27017'; // REPLACE WITH YOUR DB SERVER
 const database = 'DB_Trips';      // REPLACE WITH YOUR DB NAME
 
 class Database {

@@ -9,12 +9,16 @@ services:
     image: 'mongo:latest'
     networks:
       - places-net
+    ports:
+      - 27017:27017
   redisdb:
     image: 'redis:latest'
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     networks:
       - places-net
+    ports:
+      - 6379:6379
   place-api:
     image: carlosgl/places-api:v1
     ports:
