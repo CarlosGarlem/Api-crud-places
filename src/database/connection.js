@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
+const config = require('config');
 
-const server = 'mongoplaces.eastus.azurecontainer.io:27017'; // REPLACE WITH YOUR DB SERVER
-const database = 'DB_Trips';      // REPLACE WITH YOUR DB NAME
+const mongoConfig = config.get('Mongo.dbConfig');
+const server = mongoConfig.host + ':' + mongoConfig.port 
+const database = mongoConfig.db
 
 class Database {
   constructor() {
@@ -15,6 +17,7 @@ _connect() {
     })
        .then(() => {
          console.log('Database connection successful')
+         console.log(server)
        })
        .catch(err => {
          console.error('Database connection error')

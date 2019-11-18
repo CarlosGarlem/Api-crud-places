@@ -10,6 +10,7 @@ docker ps [-a]
 docker rmi [Image ID]
 docker rm [container name/id]
 docker stop [container name/id]
+docker logs [container name/id]
 
 //BUILD IMG
 docker build -t <your username>/<your app name>:[tag] .

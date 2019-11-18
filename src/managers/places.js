@@ -1,69 +1,108 @@
 var data = require('../../data/localStorage');
 var destinationModel = require('../models/destination');
-
+const config = require('config');
 var redis = require('redis');
-var client = redis.createClient({host : 'redisplaces.eastus.azurecontainer.io', port : 6379})
+
+const redisConfig = config.get('Redis.dbConfig');
+var client = redis.createClient({host : redisConfig.host, port : redisConfig.port})
+var redisOn = false
 client.on('ready',function() {
     console.log("Redis is ready");
+    redisOn = true
 });
+client.on('error', function (err) {
+    console.log('Something went wrong ' + err);
+    redisOn = false
+})
 
 const getAllPlaces = async (req, res, next) => { 
     const key = 'get_place_all'
-    client.exists(key, function(err, reply) { 
-        if (reply === 0) {
-            destinationModel.find({}, {_id:0, __v:0}, (err, docs) => {
-                console.log("set")
-                const obj = JSON.stringify(docs)
-                client.set(key, obj);
-                client.expire(key, 60);
-                res.status(200)
-                res.json(docs)    
-            });
-        } else {
-            console.log("get")
-            client.get(key, function(err, place) {
-                res.status(200)
-                res.json(JSON.parse(place))
-            });
-        }
-    });
+
+    if(redisOn) 
+    {
+        client.exists(key, function(err, reply) { 
+            if (reply === 0) {
+                destinationModel.find({}, {_id:0, __v:0}, (err, docs) => {
+                    console.log("set")
+                    const obj = JSON.stringify(docs)
+                    client.set(key, obj);
+                    client.expire(key, 60);
+                    res.status(200)
+                    res.json(docs)    
+                });
+            } else {
+                console.log("get")
+                client.get(key, function(err, place) {
+                    res.status(200)
+                    res.json(JSON.parse(place))
+                });
+            }
+        });
+    } else {
+        destinationModel.find({}, {_id:0, __v:0}, (err, docs) => {
+            res.status(200)
+            res.json(docs)    
+        });
+    }
+    
 }
   
 const getOnePlace = async(req, res, next) => {
     const { params } = req
 
-    const key = 'get_place_' + params.id
-    client.exists(key, function(err, reply) {
-        if (reply === 0) {
-            place = destinationModel.find({ id: Number(params.id) }, { _id: 0, __v: 0 }, (err, doc) => {
-                if (!err) {
-                    const place = doc
-                    if(place.length > 0) {
-                        console.log("set1")
-                        client.set(key, JSON.stringify(place))
-                        client.expire(key, 60);
-                        res.status(200)
-                        res.json(place)
+    if(redisOn){
+        const key = 'get_place_' + params.id
+        client.exists(key, function(err, reply) {
+            if (reply === 0) {
+                place = destinationModel.find({ id: Number(params.id) }, { _id: 0, __v: 0 }, (err, doc) => {
+                    if (!err) {
+                        const place = doc
+                        if(place.length > 0) {
+                            console.log("set1")
+                            client.set(key, JSON.stringify(place))
+                            client.expire(key, 60);
+                            res.status(200)
+                            res.json(place)
+                        }
+                        else
+                        {
+                            res.status(404)
+                            res.send('Item not found')
+                        }
                     }
-                    else
-                    {
-                        res.status(404)
-                        res.send('Item not found')
+                    else{
+                        res.status(400)
+                        res.send('Bad request id')
                     }
+                });
+            } else {
+                console.log("get1")
+                client.get(key, function(err, place) {
+                    res.status(200)
+                    res.json(JSON.parse(place))
+                });
+            }
+        });
+    } else {
+        place = destinationModel.find({ id: Number(params.id) }, { _id: 0, __v: 0 }, (err, doc) => {
+            if (!err) {
+                const place = doc
+                if(place.length > 0) {
+                    res.status(200)
+                    res.json(place)
                 }
-                else{
-                    res.status(400)
-                    res.send('Bad request id')
+                else
+                {
+                    res.status(404)
+                    res.send('Item not found')
                 }
-            });
-        } else {
-            console.log("get1")
-            client.get(key, function(err, place) {
-                res.status(200)
-                res.json(JSON.parse(place))
-            });
-        }
-    });
+            }
+            else{
+                res.status(400)
+                res.send('Bad request id')
+            }
+        });
+    }
 }
 
 const nextIndex = (body, res) => {
@@ -172,13 +211,16 @@ const deletePlace = async(req, res, next) => {
     const query = destinationModel.deleteOne({ id: Number(params.id) }) 
     query.then(function (result) {
         if(result.ok === 1 && result.deletedCount > 0){
-            client.exists(key, function(err, reply) { 
-                if (reply === 1) {
-                    client.del(key,function(err, place) {
-                        console.log("Key places_all deleted from cache")
-                    });
-                }
-            });
+            if(redisOn){
+                client.exists(key, function(err, reply) { 
+                    if (reply === 1) {
+                        client.del(key,function(err, place) {
+                            console.log("Key places_all deleted from cache")
+                        });
+                    }
+                });
+            }
+           
             res.status(204)
             res.send('Item deleted')
         }

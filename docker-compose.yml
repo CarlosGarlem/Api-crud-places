@@ -31,7 +31,7 @@ services:
   place-site:
     image: carlosgl/places-site:v1
     ports:
-      - 8000:4200
+      - 8000:8000
     networks:
       - places-net
 
