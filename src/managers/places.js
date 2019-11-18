@@ -2,36 +2,30 @@ var data = require('../../data/localStorage');
 var destinationModel = require('../models/destination');
 
 const getAllPlaces = async (req, res, next) => {  
-    destinationModel.find({}, {_id:0, __v:0}, (err, docs) => {
+    await destinationModel.find({}, {_id:0, __v:0}, (err, docs) => {
         res.status(200)
-        res.json(docs)    
+        res.json(JSON.parse(JSON.stringify(docs)))
     });
 }
   
 const getOnePlace = async(req, res, next) => {
     const { params } = req
-    place = destinationModel.find({ id: Number(params.id) }, { _id: 0, __v: 0 }, (err, doc) => {
-        if (!err) {
-            var place = doc
-            if(place.length > 0) {
-                res.status(200)
-                res.json(place)
-            }
-            else
-            {
-                res.status(404)
-                res.send('Item not found')
-            }
+    place = await destinationModel.find({ id: Number(params.id) }, { _id: 0, __v: 0 }, (err, doc) => {
+        var place = doc
+        if(place.length > 0) {
+            res.status(200)
+            res.json(JSON.parse(JSON.stringify(place[0])))
         }
-        else{
-            res.status(400)
-            res.send('Bad request id')
+        else
+        {
+            res.status(404)
+            res.send('Item not found')
         }
     });
 }
 
-const nextIndex = (body, res) => {
-    destinationModel.find({}, {_id: 0, id: 1}).sort({id:-1}).limit(1).exec((err, doc) => {
+const nextIndex = async (body, res) => {
+    await destinationModel.find({}, {_id: 0, id: 1}).sort({id:-1}).limit(1).exec((err, doc) => {
         if(doc.length > 0) {
             var nextId = doc[0].id + 1
             body.id = nextId
@@ -44,7 +38,7 @@ const nextIndex = (body, res) => {
     })
 }
 
-const insertItem = (body, res) => {
+const insertItem = async (body, res) => {
     var newPlace = destinationModel({
         id: body.id,
         country: body.country,
@@ -54,15 +48,7 @@ const insertItem = (body, res) => {
         activity: body.activity
     });
 
-    newPlace.save((err) => {
-        //if(!err) {
-            res.status(201)
-            res.send('Place created')
-        //} else {
-           // res.status(400)
-            //res.send("Error")
-        //}
-    })
+    await newPlace.save((err) => {})
 }
 
 const createPlace = async(req, res, next) => {
@@ -82,7 +68,10 @@ const createPlace = async(req, res, next) => {
         }
 
         if(flag){
-            nextIndex(body, res) 
+            await nextIndex(body, res).then( () => {
+                res.status(201)
+                res.send('Place created')
+            })
         }
         else
         {
@@ -114,7 +103,8 @@ const updatePlace = async(req, res, next) => {
         if(flag){
             var query = destinationModel.updateOne({ id: Number(params.id) }, 
                 { country: body.country, rating: body.rating, place: body.place, description: body.description, activity: body.activity })
-            query.then(function (result) {
+           
+            await query.then(function (result) {
                 //{ n: 1, nModified: 1, ok: 1 }
                 if(result.ok === 1 && result.n > 0){
                     res.status(204)
@@ -138,7 +128,7 @@ const updatePlace = async(req, res, next) => {
 const deletePlace = async(req, res, next) => {
     const { params } = req
     var query = destinationModel.deleteOne({ id: Number(params.id) }) 
-    query.then(function (result) {
+    await query.then(function (result) {
         if(result.ok === 1 && result.deletedCount > 0){
             res.status(204)
             res.send('Item deleted')

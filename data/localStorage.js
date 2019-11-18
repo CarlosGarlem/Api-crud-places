@@ -1,11 +1,11 @@
 const storage = [
     {
-        id: 1,
-        country: 'Guatemala',
+        id: 1.0,
+        country: "Guatemala",
         rating: 4.5,
-        place: 'Tikal National Park',
-        description: 'Archeologic ruins and temples',
-        activity: 'Archeologic site tour'
+        place: "Tikal National Park",
+        description: "Archeologic ruins and temples",
+        activity: "Archeologic site tour"
     },
     {
         id: 2.0,

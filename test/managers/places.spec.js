@@ -45,7 +45,7 @@ describe("Places Manager", function() {
       await getAllPlaces(reqMock, resMock, nextMock).then( () =>{
         sinon.assert.calledWith(statusMock, 200) 
         sinon.assert.calledWith(jsonMock, lista)
-      }).catch(() => {})
+      })
 
   })
 
@@ -72,10 +72,10 @@ describe("Places Manager", function() {
       await getOnePlace(reqMock, resMock, nextMock).then( ()=>{
         sinon.assert.calledWith(statusMock, 200)
         sinon.assert.calledWith(jsonMock, lista[0]) //index = 0 --> id = 1
-      }).catch(() => {})
+      })
 
   })
-    
+  
   it('won\'t get place, bad id input', async() => {
     const sandbox = sinon.createSandbox()
     const statusMock = sandbox.stub()
@@ -98,11 +98,11 @@ describe("Places Manager", function() {
     await getOnePlace(reqMock, resMock, nextMock).then( ()=>{
       sinon.assert.calledWith(statusMock, 404)
       sinon.assert.calledWith(sendMock, 'Item not found')
-    }).catch(() => {})
+    })
 
   })
 
-  it('won\'t get place, id input not numeric', async() => {
+  /*it('won\'t get place, id input not numeric', async() => {
     const sandbox = sinon.createSandbox()
     const statusMock = sandbox.stub()
     const jsonMock = sandbox.stub()
@@ -124,11 +124,11 @@ describe("Places Manager", function() {
     await getOnePlace(reqMock, resMock, nextMock).then( ()=>{
       sinon.assert.calledWith(statusMock, 400)
       sinon.assert.calledWith(sendMock, 'Bad id request')
-    }).catch(() => {})
+    })
 
-  })
+  })*/
        
-    
+  
   it('will create a place', async() => {
     const sandbox = sinon.createSandbox()
     const statusMock = sandbox.stub()
@@ -164,10 +164,11 @@ describe("Places Manager", function() {
     await createPlace(reqMock, resMock, nextMock).then( ()=>{
       sinon.assert.calledWith(statusMock, 201)
       sinon.assert.calledWith(sendMock, 'Place created')
-    }).catch(() => {})
+    })
 
   })
 
+  
   it('will create a place, even if the db is empty', async() => {
     const sandbox = sinon.createSandbox()
     const statusMock = sandbox.stub()
@@ -195,12 +196,10 @@ describe("Places Manager", function() {
       await createPlace(reqMock, resMock, nextMock).then( ()=>{
         sinon.assert.calledWith(statusMock, 201)
         sinon.assert.calledWith(sendMock, 'Place created')
-      }).catch(() => {})
-    }).catch(() => {})
+      })
+    })
    
   })
-  
-  
 
   it('won\'t create a place, less input properties', async() => {
     const sandbox = sinon.createSandbox()
@@ -224,7 +223,7 @@ describe("Places Manager", function() {
     await createPlace(reqMock, resMock, nextMock).then( ()=>{
       sinon.assert.calledWith(statusMock, 400)
     sinon.assert.calledWith(sendMock, 'Check properties of object sent')
-    }).catch(() => {})
+    })
 
   })
 
@@ -254,7 +253,7 @@ describe("Places Manager", function() {
     await createPlace(reqMock, resMock, nextMock).then( ()=>{
       sinon.assert.calledWith(statusMock, 400)
     sinon.assert.calledWith(sendMock, 'Check properties of object sent')
-    }).catch(() => {})
+    })
     
   })
     
@@ -275,7 +274,7 @@ describe("Places Manager", function() {
     await createPlace(reqMock, resMock, nextMock).then( ()=>{
       sinon.assert.calledWith(statusMock, 400)
       sinon.assert.calledWith(sendMock, 'Missing params, item not created')
-    }).catch(() => {})
+    })
     
   })
     
@@ -308,10 +307,10 @@ describe("Places Manager", function() {
     await updatePlace(reqMock, resMock, nextMock).then( ()=>{
       sinon.assert.calledWith(statusMock, 204)
       sinon.assert.calledWith(sendMock, 'Updated')
-    }).catch(() => {})
-
+    })
   })
 
+  
   it('won\'t update a place, item not found', async() => {
     const sandbox = sinon.createSandbox()
     const statusMock = sandbox.stub()
@@ -339,12 +338,11 @@ describe("Places Manager", function() {
     }
     
     await updatePlace(reqMock, resMock, nextMock).then( ()=>{
-      sinon.assert.calledWith(statusMock, 204)
-      sinon.assert.calledWith(sendMock, 'Updated')
-    }).catch(() => {})
+      sinon.assert.calledWith(statusMock, 404)
+      sinon.assert.calledWith(sendMock, 'Item not found')
+    })
 
   })
-
 
   it('won\'t update a place, wrong properties on body', async() => {
     const sandbox = sinon.createSandbox()
@@ -375,7 +373,7 @@ describe("Places Manager", function() {
     await updatePlace(reqMock, resMock, nextMock).then( ()=>{
       sinon.assert.calledWith(statusMock, 400)
       sinon.assert.calledWith(sendMock, 'Check body properties')
-    }).catch(() => {})
+    })
     
   })
 
@@ -406,7 +404,7 @@ describe("Places Manager", function() {
     await updatePlace(reqMock, resMock, nextMock).then( ()=>{
       sinon.assert.calledWith(statusMock, 400)
       sinon.assert.calledWith(sendMock, 'Check body properties')
-    }).catch(() => {})
+    })
     
   })
     
@@ -433,11 +431,10 @@ describe("Places Manager", function() {
     await updatePlace(reqMock, resMock, nextMock).then( ()=>{
       sinon.assert.calledWith(statusMock, 400)
       sinon.assert.calledWith(sendMock, 'Missing body on request')
-    }).catch(() => {})
+    })
     
   })
     
-       
   it('will delete a place', async() => {
     const sandbox = sinon.createSandbox()
     const statusMock = sandbox.stub()
@@ -460,7 +457,7 @@ describe("Places Manager", function() {
     await deletePlace(reqMock, resMock, nextMock).then( ()=>{
       sinon.assert.calledWith(statusMock, 204)
       sinon.assert.calledWith(sendMock, 'Item deleted')
-    }).catch(() => {})
+    })
 
   })
 
@@ -486,7 +483,7 @@ describe("Places Manager", function() {
     await deletePlace(reqMock, resMock, nextMock).then( ()=>{
       sinon.assert.calledWith(statusMock, 404)
       sinon.assert.calledWith(sendMock, 'Item not found')
-    }).catch(() => {})
+    })
 
   })
 });
