@@ -101,33 +101,6 @@ describe("Places Manager", function() {
     })
 
   })
-
-  /*it('won\'t get place, id input not numeric', async() => {
-    const sandbox = sinon.createSandbox()
-    const statusMock = sandbox.stub()
-    const jsonMock = sandbox.stub()
-    const nextMock = sandbox.stub()
-    const sendMock = sandbox.stub()
-
-    const reqMock = {
-        params: {
-            id: "a"
-        }
-    }
-
-    const resMock = {
-      status: statusMock,
-      json: jsonMock,
-      send: sendMock
-    }
-
-    await getOnePlace(reqMock, resMock, nextMock).then( ()=>{
-      sinon.assert.calledWith(statusMock, 400)
-      sinon.assert.calledWith(sendMock, 'Bad id request')
-    })
-
-  })*/
-       
   
   it('will create a place', async() => {
     const sandbox = sinon.createSandbox()
