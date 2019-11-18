@@ -99,29 +99,6 @@ describe("Places Manager", function() {
 
   })
 
-  /*it('will get all the places', async () => {
-    const sandbox = sinon.createSandbox()
-    const statusMock = sandbox.stub()
-    const jsonMock = sandbox.stub()
-    const reqMock = sandbox.stub()
-    const nextMock = sandbox.stub()
-    const sendMock = sandbox.stub()
-
-    const resMock = {
-      status: statusMock,
-      json: jsonMock,
-      send: sendMock
-    }
-
-    await getAllPlaces(reqMock, resMock, nextMock).then( () =>{
-      sinon.assert.calledWith(statusMock, 200) 
-      sinon.assert.calledWith(jsonMock, lista)
-    }).catch(() => {})
-
-})*/
-
-
-
   it('will get one place with a correct id input', async () => {
       const sandbox = sinon.createSandbox()
       const statusMock = sandbox.stub()
