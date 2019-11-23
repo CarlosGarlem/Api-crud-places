@@ -15,6 +15,7 @@ docker logs [container name/id]
 //BUILD IMG
 docker build -t <your username>/<your app name>:[tag] .
 docker build -t carlosgl/places-api:v1 .
+docker build --build-arg NODE=production -t carlosgl/places-api:v1 .
 
 //UPLOAD IMAGE TO DOCKERHUB
 docker login -u <dockerhub username>

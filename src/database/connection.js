@@ -17,7 +17,6 @@ _connect() {
     })
        .then(() => {
          console.log('Database connection successful')
-         console.log(server)
        })
        .catch(err => {
          console.error('Database connection error')
